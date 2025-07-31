@@ -1,57 +1,57 @@
 <?php
-// proses_konfirmasi.php
+// proses_konfirmasi.php (Versi AJAX)
 
+include 'session_handler.php';
 include 'koneksi.php';
-session_start();
 
-// 1. Cek otorisasi, hanya admin yang boleh mengakses
-if (!isset($_SESSION['loggedin']) || $_SESSION['tipe_akun'] !== 'admin') {
-    header("Location: login.php");
+// Atur header untuk output JSON
+header('Content-Type: application/json');
+
+// Cek otorisasi
+if (!isset($_SESSION['loggedin']) || ($_SESSION['tipe_akun'] ?? null) !== 'admin') {
+    echo json_encode(['status' => 'error', 'message' => 'Akses ditolak. Sesi tidak valid.']);
     exit();
 }
 
-// 2. Ambil dan validasi parameter dari URL
-$id_pemesanan = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$aksi = isset($_GET['aksi']) ? $_GET['aksi'] : '';
+// Ambil data dari URL
+$id = $_GET['id'] ?? 0;
+$aksi = $_GET['aksi'] ?? '';
 
-if ($id_pemesanan <= 0 || !in_array($aksi, ['konfirmasi', 'tolak'])) {
-    $_SESSION['pesan_error'] = "Aksi tidak valid.";
-    header("Location: dashboard_admin.php");
+if (empty($id) || !in_array($aksi, ['konfirmasi', 'tolak'])) {
+    echo json_encode(['status' => 'error', 'message' => 'ID atau aksi tidak valid.']);
     exit();
 }
 
 // Tentukan status baru berdasarkan aksi
-$status_baru = '';
-if ($aksi == 'konfirmasi') {
-    $status_baru = 'Dikonfirmasi';
-} elseif ($aksi == 'tolak') {
-    $status_baru = 'Ditolak';
+$new_status = '';
+if ($aksi === 'konfirmasi') {
+    $new_status = 'Dikonfirmasi';
+} elseif ($aksi === 'tolak') {
+    $new_status = 'Ditolak';
 }
 
-// 3. Update status pemesanan di database
-$query_update = "UPDATE pemesanan SET status = ? WHERE id = ?";
-$stmt = mysqli_prepare($koneksi, $query_update);
-mysqli_stmt_bind_param($stmt, "si", $status_baru, $id_pemesanan);
+// Update database
+// Gunakan prepared statements untuk keamanan
+$stmt = $koneksi->prepare("UPDATE pemesanan SET status = ? WHERE id = ?");
+$stmt->bind_param("si", $new_status, $id);
 
-if (mysqli_stmt_execute($stmt)) {
-    // --- PERBAIKAN ---
-    // Logika untuk mengembalikan status kost saat ditolak dihapus sementara
-    // karena tabel 'pemesanan' Anda tidak memiliki kolom 'id_kost'.
-    //
-    // CATATAN: Jika Anda menolak pemesanan, Anda harus mengubah status kost
-    // kembali menjadi 'publish' secara manual melalui menu Manajemen Kost.
-    // Untuk fungsionalitas penuh, sangat disarankan untuk menambahkan
-    // kolom 'id_kost' ke tabel 'pemesanan'.
-    
-    $_SESSION['pesan_sukses'] = "Status pemesanan berhasil diperbarui.";
+if ($stmt->execute()) {
+    // Jika berhasil
+    $response = [
+        'status' => 'success',
+        'message' => 'Pemesanan berhasil ' . $new_status . '.',
+        'new_status' => $new_status
+    ];
+    echo json_encode($response);
 } else {
-    $_SESSION['pesan_error'] = "Gagal memperbarui status pemesanan.";
+    // Jika gagal
+    $response = [
+        'status' => 'error',
+        'message' => 'Gagal memperbarui status pemesanan.'
+    ];
+    echo json_encode($response);
 }
 
-mysqli_stmt_close($stmt);
-
-// 4. Redirect kembali ke dasbor admin
-header("Location: dashboard_admin.php");
-exit();
-
+$stmt->close();
+$koneksi->close();
 ?>

@@ -1,21 +1,29 @@
 <?php
-include 'koneksi.php';
-session_start();
+// riwayat_pemesanan.php
 
-// Pastikan pengguna sudah login
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+// Pastikan session_start() adalah hal pertama yang dieksekusi di file ini.
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Cek status login SEBELUM menyertakan file lain atau menampilkan HTML.
+if (!isset($_SESSION['loggedin']) || ($_SESSION['tipe_akun'] ?? null) !== 'penyewa') {
     header("Location: login.php");
     exit();
 }
 
-// Gunakan 'user_id' (angka) bukan 'username' (teks)
+// Setelah pengecekan sesi berhasil, baru sertakan file koneksi.
+include 'koneksi.php';
+
+// Gunakan 'user_id' untuk mengambil data riwayat yang benar.
 $id_penyewa = $_SESSION['user_id']; 
 
-// --- PERBAIKAN: Mengurutkan berdasarkan 'id' karena 'tanggal_pemesanan' tidak ada ---
+// Siapkan query menggunakan prepared statement untuk keamanan.
+// Mengurutkan berdasarkan 'id' secara menurun untuk menampilkan yang terbaru.
 $query_str = "SELECT * FROM pemesanan WHERE id_penyewa = ? ORDER BY id DESC";
 $stmt = mysqli_prepare($koneksi, $query_str);
 
-// Tambahkan pengecekan untuk mencegah error fatal
+// Tambahkan pengecekan untuk mencegah error fatal jika query gagal.
 if ($stmt === false) {
     die("Error preparing statement: " . mysqli_error($koneksi));
 }
@@ -63,7 +71,7 @@ $result = mysqli_stmt_get_result($stmt);
                             <th class="px-4 py-3">Nama Kost</th>
                             <th class="px-4 py-3">Tanggal Masuk</th>
                             <th class="px-4 py-3">Tanggal Keluar</th>
-                            <th class="px-4 py-3">Harga</th>
+                            <th class="px-4 py-3">Total Harga</th>
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Aksi</th>
                         </tr>
@@ -75,10 +83,14 @@ $result = mysqli_stmt_get_result($stmt);
                                     <td class="px-4 py-3 font-medium"><?= htmlspecialchars($data['nama_kost']) ?></td>
                                     <td class="px-4 py-3"><?= date('d M Y', strtotime($data['tanggal_masuk'])) ?></td>
                                     <td class="px-4 py-3"><?= date('d M Y', strtotime($data['tanggal_keluar'])) ?></td>
-                                    <td class="px-4 py-3">Rp <?= number_format($data['harga'], 0, ',', '.') ?></td>
+                                    <td class="px-4 py-3">Rp <?= isset($data['total_harga']) ? number_format($data['total_harga'], 0, ',', '.') : number_format($data['harga'], 0, ',', '.') ?></td>
                                     <td class="px-4 py-3">
                                         <span class="px-3 py-1 text-xs font-semibold rounded-full 
-                                            <?= ($data['status'] == 'Dikonfirmasi') ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' ?>">
+                                            <?php 
+                                                if ($data['status'] == 'Dikonfirmasi') echo 'bg-green-100 text-green-800';
+                                                elseif ($data['status'] == 'Ditolak') echo 'bg-red-100 text-red-800';
+                                                else echo 'bg-yellow-100 text-yellow-800';
+                                            ?>">
                                             <?= htmlspecialchars($data['status']) ?>
                                         </span>
                                     </td>

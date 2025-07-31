@@ -110,7 +110,7 @@
                     <div class="p-6 text-left">
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Kost Melati Indah</h3>
                         <p class="text-gray-600 mb-4">Lokasi strategis dekat kampus dan pusat perbelanjaan.</p>
-                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full"><i class="fas fa-map-marker-alt mr-1"></i> Jakarta Selatan</span>
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full"><i class="fas fa-map-marker-alt mr-1"></i> Blang Bintatang</span>
                     </div>
                 </div>
                 <!-- Kost Card 2 -->
@@ -119,7 +119,7 @@
                     <div class="p-6 text-left">
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Kost Anggrek Residence</h3>
                         <p class="text-gray-600 mb-4">Fasilitas lengkap dengan area komunal yang nyaman.</p>
-                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full"><i class="fas fa-map-marker-alt mr-1"></i> Bandung</span>
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full"><i class="fas fa-map-marker-alt mr-1"></i> Blang Bintatang</span>
                     </div>
                 </div>
                 <!-- Kost Card 3 -->
@@ -128,7 +128,7 @@
                     <div class="p-6 text-left">
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Kost Cempaka Asri</h3>
                         <p class="text-gray-600 mb-4">Lingkungan tenang dan aman, cocok untuk mahasiswa.</p>
-                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full"><i class="fas fa-map-marker-alt mr-1"></i> Yogyakarta</span>
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full"><i class="fas fa-map-marker-alt mr-1"></i> Blang Bintatang</span>
                     </div>
                 </div>
             </div>

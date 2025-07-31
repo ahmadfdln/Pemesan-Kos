@@ -9,7 +9,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Cek apakah pengguna sudah login
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: ../login.php"); // Redirect ke halaman login jika belum login
+    header("Location: login.php"); // Redirect ke halaman login jika belum login
     exit();
 }
 

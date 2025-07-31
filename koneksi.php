@@ -1,4 +1,6 @@
 <?php
+// koneksi.php
+
 $host = "localhost";
 $user = "root";
 $pass = "";
